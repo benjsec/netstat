@@ -2,6 +2,7 @@ import subprocess
 import threading
 import socket
 import ipaddress
+import click
 
 def is_up(ip):
     return subprocess.Popen(["ping", "-c 1", "-q", ip], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -33,9 +34,12 @@ def get_hostname_list(ip_addr_list):
 def get_network(raw_input):
     return ipaddress.ip_network(raw_input, strict=False)
 
-def main():
+
+@click.command()
+@click.argument('network_address')
+def main(network_address):
     print("Scanning network for live devices.")
-    netlist = get_network(u''.join("192.168.11.0/24"))
+    netlist = get_network(u''.join(network_address))
     alivelist = get_netdevice_list(netlist)
     namelist = get_hostname_list(alivelist)
     for dev in namelist:
